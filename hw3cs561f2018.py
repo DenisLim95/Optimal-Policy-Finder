@@ -116,28 +116,30 @@ def value_iteration(mdp, maxError):
 			# if (s in obstacles):
 				# print(Uprime[s])
 			# Uprime[s] = R[s] + gamma * np.max([sum([p * U[s1] for (s1,p) in T[s][a] ]) for a in mdp.actions])
-   			# delta = max(delta, abs(Uprime[s] - U[s]))
+			# delta = max(delta, abs(Uprime[s] - U[s]))
 
 
-   		if abs(Uprime[s] - U[s]) > delta:
-   			delta = abs(Uprime[s] - U[s])
+		if abs(Uprime[s] - U[s]) > delta:
+			delta = abs(Uprime[s] - U[s])
 
-   		if (delta < (maxError * (1-gamma) / gamma)):
-   			return U
+		if (delta < (maxError * (1-gamma) / gamma)):
+			return U
 
-   		# cutoff = maxError * (1 - gamma) / gamma
-   		# # print("delta")a
-   		# # print(delta)
-   		# # print("cutoff")
-   		# # print(cutoff)
-   		
-   		# if (delta < cutoff):
-   		# 	return U
+		# cutoff = maxError * (1 - gamma) / gamma
+		# # print("delta")a
+		# # print(delta)
+		# # print("cutoff")
+		# # print(cutoff)
+		
+		# if (delta < cutoff):
+		# 	return U
 
 
 def test():
 	orientations = NORTH, SOUTH, EAST, WEST = [(1, 0), (0, -1), (-1, 0), (0, 1)]
 	turns = LEFT, RIGHT = (+1, -1)
+	output = open("output.txt","w")
+	masterScores = []
 
 	def turn_heading(heading, inc, headings=orientations):
 		return headings[(headings.index(heading) + inc) % len(headings)]
@@ -148,30 +150,57 @@ def test():
 	def turn_left(heading):
 		return turn_heading(heading, LEFT)
 
-	for i in range(len(cars)):
-	    for j in range(10):
+	for i in range(n):
+		mean_score = 0
+		for j in range(10):
+			print("%s~~~~~~~~~~~~~~~~~~~~~~~" %j)
+			score = 0
 			pos = carOrigins[i]
-			numpy.random.seed(j)
-			swerve = numpy.random.random_sample(1000000) 
+			np.random.seed(j)
+			swerve = np.random.random_sample(1000000) 
 			k = 0
 			while pos != carDestinations[i]:
 				move = policies[i][pos]
 				if swerve[k] > 0.7:
-				    if swerve[k] > 0.8:
-				        if swerve[k] > 0.9:
-				        	move = turn_right(turn_right(move)) 
-				        else:
-				            move = turn_right(move)
-				    else:
-				        move = turn_left(move)
+					if swerve[k] > 0.8:
+						if swerve[k] > 0.9:
+							move = turn_right(turn_right(move)) 
+						else:
+							move = turn_right(move)
+					else:
+						move = turn_left(move)
+				
+				print("MOVE: %s" %(move,)),
+				if (move != None):
+					# got the move, so update position and add the points.
+					# if move causes outside grid, reject but update score
+					if (pos[0] + move[0] >= s or pos[0] + move[0] < 0 or pos[1] + move[1] >= s or pos[1] + move[1] < 0):
+						pos = pos # stay in same spot
+					else:
+						pos = (pos[0] + move[0], pos[1] + move[1])
+					score += carMap[pos[1]][pos[0]]
+					
+					if (pos == carDestinations[i]):
+						print("		VALUE GAINED: %s" %(carMap[pos[1]][pos[0]] + 100)),
+					else:
+						print("		VALUE GAINED: %s" %carMap[pos[1]][pos[0]]),
+
+					print("		SWERVE VALUE: %s" %swerve[k])
 				k += 1
-				print("-----> %s" %move)
-				# print(move)
+			score += 100.0
+			masterScores.append(score)
+			print("SCORE: %s" %masterScores)
+			mean_score += score
+			# print("score: ")
+			# print(score)
+			# print("=================================================")
 
-
-
-
-
+		mean_score = (mean_score/10.0)
+		print("AVERAGE SCORE: %s" %mean_score)
+		mean_score_floored = np.floor(mean_score)
+		print("FLOORED AVERAGE SCORE: %s" %mean_score_floored)
+		output.write("%s\n" %int(mean_score))
+	output.close()
 
 def test2():
 	
