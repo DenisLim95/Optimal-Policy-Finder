@@ -154,7 +154,7 @@ def test():
 		masterScores = []
 		mean_score = 0
 		for j in range(10):
-			print("%s~~~~~~~~~~~~~~~~~~~~~~~" %j)
+			# print("%s~~~~~~~~~~~~~~~~~~~~~~~" %j)
 			score = 0
 			pos = carOrigins[i]
 			np.random.seed(j)
@@ -171,7 +171,7 @@ def test():
 					else:
 						move = turn_left(move)
 				
-				print("MOVE: %s" %(move,)),
+				# print("MOVE: %s" %(move,)),
 				if (move != None):
 					# got the move, so update position and add the points.
 					# if move causes outside grid, reject but update score
@@ -181,27 +181,24 @@ def test():
 						pos = (pos[0] + move[0], pos[1] + move[1])
 					score += carMap[pos[1]][pos[0]]
 					
-					if (pos == carDestinations[i]):
-						print("		VALUE GAINED: %s" %(carMap[pos[1]][pos[0]] + 100)),
-					else:
-						print("		VALUE GAINED: %s" %carMap[pos[1]][pos[0]]),
-
-					print("		SWERVE VALUE: %s" %swerve[k])
+					# if (pos == carDestinations[i]):
+					# 	print("		VALUE GAINED: %s" %(carMap[pos[1]][pos[0]] + 100)),
+					# else:
+					# 	print("		VALUE GAINED: %s" %carMap[pos[1]][pos[0]]),
+					# print("		SWERVE VALUE: %s" %swerve[k])
 				k += 1
 			score += 100.0
 			masterScores.append(score)
-			print("SCORE: %s" %masterScores)
+			# print("SCORE: %s" %masterScores)
 			mean_score += score
-			# print("score: ")
-			# print(score)
-			# print("=================================================")
-
 		mean_score = (mean_score/10.0)
-		print("AVERAGE SCORE: %s" %mean_score)
+		# print("AVERAGE SCORE: %s" %mean_score)
 		mean_score_floored = np.floor(mean_score)
-		print("FLOORED AVERAGE SCORE: %s" %mean_score_floored)
+		# print("FLOORED AVERAGE SCORE: %s" %mean_score_floored)
 		output.write("%s\n" %int(mean_score))
 	output.close()
+
+
 
 def test2():
 	
@@ -447,7 +444,7 @@ def main():
 	processInput()
 	# print("------------------------------------------")
 	buildMap()
-	pprint.pprint(carMap)
+	# pprint.pprint(carMap)
 	# for row in carMap:
 	# 	print(row)
 	finalScore = 0
@@ -509,7 +506,7 @@ def main():
 		policy = findOptimalPolicy(myMdp,V)
 		policies.append(policy)
 
-	pprint.pprint(policies)
+	# pprint.pprint(policies)
 	# pprint.pprint(policies)
 	test()
 
