@@ -150,11 +150,11 @@ def test():
 
 	for i in range(len(cars)):
 	    for j in range(10):
-			pos = cars[i]
+			pos = carOrigins[i]
 			numpy.random.seed(j)
 			swerve = numpy.random.random_sample(1000000) 
 			k = 0
-			while pos != ends[i]:
+			while pos != carDestinations[i]:
 				move = policies[i][pos]
 				if swerve[k] > 0.7:
 				    if swerve[k] > 0.8:
@@ -165,6 +165,9 @@ def test():
 				    else:
 				        move = turn_left(move)
 				k += 1
+				print("-----> %s" %move)
+				# print(move)
+
 
 
 
@@ -477,7 +480,7 @@ def main():
 
 	pprint.pprint(policies)
 	# pprint.pprint(policies)
-	# test()
+	test()
 
 	# pprint.pprint(policy)
 	# print("finalScore: ")
