@@ -29,7 +29,7 @@ policiesDict = {}
 # 			[up, up, up],
 # 			[right, up, up]]
 
-policies0 = {
+policies0 = [{
 			(0,0): None,
 			(1,0): left,
 			(2,0): left,
@@ -39,7 +39,7 @@ policies0 = {
 			(0,2): right,
 			(1,2): up,
 			(2,2): up
-			}
+			}]
 
 policies1 = [{
 	(7, 3): (0, -1),
@@ -547,7 +547,7 @@ policies1 = [{
 
 # policiesDict[0] = policies0
 # policiesDict[1] = policies1
-policiesDict[0] = policies1
+# policiesDict[0] = policies1
 
 def turn_right(direction):
 	if direction == left:
@@ -586,7 +586,7 @@ def test():
 			k = 0
 			while (pos != carDestinations[i]):
 				# policies = 2d array of turning directions for each car.
-				move = policies1[i][pos]
+				move = policies0[i][pos]
 				print(move)
 
 				print("Policy says: ")
