@@ -570,9 +570,59 @@ def turn_left(direction):
 		return left
 
 
-# def makePolicy():
-	# Make policy for each car.
+class MDP:
+	def __init__(self, actions, states, transModel, rewards, gamma):
+		self.states = states
+		self.actions = actions
+		self.transModel = transModel
+		self.rewards = rewards
+		self.gamma = gamma
 
+	def myPrint(self):
+		print("------------------------------------")
+		
+		print("Actions:")
+		print(self.actions)
+		print("")
+		print("States:")
+		print(self.states)
+		print("")
+		print("Transition Model:")
+		pprint.pprint(self.transModel)
+		print("")
+		print("Rewards:")
+		print(self.rewards)
+		print("")
+		print("Gamma:")
+		print(self.gamma)
+
+		print("------------------------------------")
+
+
+def value_iteration(mdp, maxError):
+	U1 = dict([(s, 0) for s in mdp.states])
+	# pprint.pprint(U1)
+	R, T, gamma = mdp.rewards, mdp.transModel, mdp.gamma
+	# pprint.pprint(U1)
+	# return []
+	done = False
+	while not done:
+		U = U1.copy()
+		delta = 0
+		for s in mdp.states:
+			# A = dict([(action, 0) for action in mdp.actions])
+
+			U1[s] = R[s] + gamma * np.max([sum([p * U[s1] for (s1,p) in T[s][a] ]) for a in mdp.actions])
+   			delta = max(delta, abs(U1[s] - U[s]))
+
+   		cutoff = maxError * (1 - gamma) / gamma
+   		print("delta")
+   		print(delta)
+   		print("cutoff")
+   		print(cutoff)
+   		
+   		if (delta < cutoff):
+   			return U
 
 
 def test():
@@ -757,30 +807,116 @@ def processInput():
 		print("car Destinations:")
 		print(carDestinations)
 
+# def expected_utility(a, s, U, mdp):
+#     # "The expected utility of doing a in state s, according to the MDP and U."
+#     return sum([p * U[s1] for (s1, p) in mdp.T[s][a]])
+
+# def best_policy(mdp, U):
+#     """Given an MDP and a utility function U, determine the best policy,
+#     as a mapping from state to action. (Equation 17.4)"""
+#     pi = {}
+#     for s in mdp.states:
+
+#     	currentState = s
+
+
+
+#         pi[s] = np.argmax(mdp.actions, lambda a:expected_utility(a, s, U, mdp))
+#     return pi
+def findOptimalPolicy(myMdp,V):
+	policy = {}
+	for state in (myMdp.states):
+
+		U = V.copy()
+		A = dict([(a, 0) for a in myMdp.actions])
+		# print(A)
+
+		for a in myMdp.actions:
+
+			for pair in myMdp.transModel[state][a]:
+
+				A[a] += pair[1] * (myMdp.rewards[state] + myMdp.gamma * V[pair[0]])
+		bestActionVal = -99999999
+		print(A)
+		print(state)
+		for action, actionVal in A.iteritems():
+			if (actionVal > bestActionVal):
+				bestActionVal = actionVal
+				bestAction = action
+		# print(bestAction)
+		policy[state] = bestAction
+
+	return policy
 
 def main():
 	processInput()
 	print("------------------------------------------")
-	# print("n: ", n)
-	# print("obstacles: ")
-	# print(obstacles)
 	buildMap()
-	# print(carMap)
-	# for x in carMap:
-	    # print(*x, sep=" ")
 	for row in carMap:
 		print(row)
-	# printInput()
-	
-	# print(swerve)
+	finalScore = 0
+	# finalScore = test()
 
-	# pprint.pprint(policies0)
-	# pprint.pprint(policiesDict)
-	finalScore = test()
+
+	# def __init__(self, actions, states, transModel, rewards, gamma):
+	# actions
+	actions = [up, down, left, right]
+	# states
+	states = []
+	for i in range(s):
+		for j in range(s):
+			states.append((j,i))
+	# transition model
+	transModel = {}
+	for i in range(s*s):
+		curState = states[i]
+		stateActions = {}
+		for action in actions:
+			possibleResultStates = []
+			for action2 in actions:
+				# statePair = [0,0]
+				resultingState = tuple(map(sum, zip(curState,action2)))
+				if (resultingState[0] >= s or resultingState[0] < 0 or resultingState[1] >= s or resultingState[1] < 0):
+					resultingState = curState
+				prob = 0
+				if action2 == action:
+					prob = 0.7
+				else:
+					prob = 0.1
+				statePair = (resultingState, prob)
+				possibleResultStates.append(statePair)
+
+			stateActions[action] = possibleResultStates
+
+		transModel[curState] = stateActions
+	pprint.pprint(transModel)
+	# rewards
+	rewards = {}
+	for i in range(s*s):
+		curState = states[i]
+		if (curState in obstacles):
+			rewards[curState] = -101
+		elif (curState in carDestinations):
+			rewards[curState] = 99
+		else:
+			rewards[curState] = -1
+	# gamma
+	gamma = 0.9
+
+	myMdp = MDP(actions, states, transModel, rewards, gamma)
+	# pprint.pprint(myMdp)
+	myMdp.myPrint()
+	maxError = 0.1
+	V = value_iteration(myMdp, maxError)
+
+	# pprint.pprint(V)
+	# Create a deterministic policy using the optimal value function
+	# policy = np.zeros([s, len(myMdp.actions)])
+	policy = findOptimalPolicy(myMdp,V)
+
+	pprint.pprint(policy)
 	print("finalScore: ")
 	print(finalScore)
-
-	
 	output = open("output.txt","w")
 	output.write("%s" %finalScore)
 	output.close()
