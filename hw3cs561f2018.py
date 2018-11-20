@@ -75,9 +75,9 @@ class MDP:
 
 		print("------------------------------------")
 
-def findBestActionUtility(s, mdp, U):
+def findBestActionUtility(s, mdp, U, z):
 	utilityList = []
-	if (s in carDestinations):
+	if (s == carDestinations[z]):
 		# print(U[s])
 		return 0
 	for a in mdp.actions:
@@ -98,7 +98,7 @@ def findBestActionUtility(s, mdp, U):
 	# print(utilityList)
 	# print(maxUtility)
 
-def value_iteration(mdp, maxError):
+def value_iteration(mdp, maxError, z):
 	Uprime = dict([(s, 0) for s in mdp.states])
 	# for obstacle in obstacles
 	# pprint.pprint(U1)
@@ -110,7 +110,7 @@ def value_iteration(mdp, maxError):
 		U = Uprime.copy()
 		delta = 0
 		for s in mdp.states:
-			best_action_utility = findBestActionUtility(s,mdp,U)
+			best_action_utility = findBestActionUtility(s,mdp,U, z)
 
 			Uprime[s] = R[s] + gamma * best_action_utility
 			# if (s in obstacles):
@@ -139,7 +139,7 @@ def test():
 	orientations = NORTH, SOUTH, EAST, WEST = [(1, 0), (0, -1), (-1, 0), (0, 1)]
 	turns = LEFT, RIGHT = (+1, -1)
 	output = open("output.txt","w")
-	masterScores = []
+	
 
 	def turn_heading(heading, inc, headings=orientations):
 		return headings[(headings.index(heading) + inc) % len(headings)]
@@ -151,6 +151,7 @@ def test():
 		return turn_heading(heading, LEFT)
 
 	for i in range(n):
+		masterScores = []
 		mean_score = 0
 		for j in range(10):
 			print("%s~~~~~~~~~~~~~~~~~~~~~~~" %j)
@@ -446,6 +447,7 @@ def main():
 	processInput()
 	# print("------------------------------------------")
 	buildMap()
+	pprint.pprint(carMap)
 	# for row in carMap:
 	# 	print(row)
 	finalScore = 0
@@ -502,7 +504,7 @@ def main():
 		# pprint.pprint(myMdp)
 		# myMdp.myPrint()
 		maxError = 0.1
-		V = value_iteration(myMdp, maxError)
+		V = value_iteration(myMdp, maxError, z)
 		# pprint.pprint(V)
 		policy = findOptimalPolicy(myMdp,V)
 		policies.append(policy)
